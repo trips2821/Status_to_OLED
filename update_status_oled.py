@@ -3,17 +3,8 @@
 import serial
 import time
 import socket
-from subprocess import Popen,PIPE
-import re, dbus, gtk, glib, sys, os
-
-def checkCurrentSsid():
-    ssidpat = re.compile('ESSID:"([^"]*)"')
-    iwconf = Popen(['iwconfig'], stdout=PIPE).communicate()[0]
-    if ssidpat.search(iwconf):
-        ssid = ssidpat.search(iwconf).groups()[0]
-        print "ssid ....... " +ssid
-
-	return ssid
+from datetime import datetime
+from time import gmtime, strftime
 
 def getNetworkIp():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -27,9 +18,9 @@ def main():
     while True:
         ip_string = "IP:" + getNetworkIp()
         hostname_string = socket.gethostname()
-        ssid = checkCurrentSsid()
-        s.write(ssid + '\\' + hostname_string + '\\' + ip_string)
-        time.sleep(10)
+        t = strftime("%Y-%m-%d\\%H:%M:%S", gmtime())
+        s.write(hostname_string + '\\' + ip_string + '\\' + t)
+        time.sleep(1)
         print s.read(3)
 
     s.close()
